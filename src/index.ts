@@ -4,6 +4,7 @@ import path from "path";
 import { generateRandomString } from "./randomString";
 import simpleGit, { pathspec } from "simple-git";
 import { getAllFiles } from "./getAllfiles";
+import {  uploadFile } from "./uploadS3";
 const git = simpleGit();
 const PORT  = 3000;
 const app = express();
@@ -17,8 +18,10 @@ const deployHandler = async (req:Request,res:Response)=>{
     const uniqueid = generateRandomString();
    await git.clone(url,path.join(__dirname+`/output/${uniqueid}`));
    const allFiles:string[] = getAllFiles(path.join(__dirname+`/output/${uniqueid}`));
-    
-   res.json({msg:""})
+    allFiles.forEach(async (file)=>{
+        await uploadFile(file.slice(__dirname.length+1),file);
+    })
+   res.json({id:uniqueid});
     
 }
 
