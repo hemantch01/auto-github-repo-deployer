@@ -1,15 +1,19 @@
 import express,{Request,Response} from "express";
 import cors from "cors";
 import path from "path";
+import { createClient } from "redis";
 import { generateRandomString } from "./randomString";
 import simpleGit, { pathspec } from "simple-git";
 import { getAllFiles } from "./getAllfiles";
 import {  uploadFile } from "./uploadS3";
+import 'dotenv/config';
 const git = simpleGit();
 const PORT  = 3000;
 const app = express();
 app.use(express.json());
 app.use(cors());
+const redisClient = createClient();
+redisClient.connect();
 const deployHandler = async (req:Request,res:Response)=>{
     const url = req.body.repoUrl;
     if(!url){
@@ -21,6 +25,7 @@ const deployHandler = async (req:Request,res:Response)=>{
     allFiles.forEach(async (file)=>{
         await uploadFile(file.slice(__dirname.length+1),file);
     })
+    redisClient.lPush("build-queue",uniqueid);
    res.json({id:uniqueid});
     
 }
