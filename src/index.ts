@@ -3,7 +3,7 @@ import cors from "cors";
 import path from "path";
 import { createClient } from "redis";
 import { generateRandomString } from "./randomString";
-import simpleGit, { pathspec } from "simple-git";
+import simpleGit from "simple-git";
 import { getAllFiles } from "./getAllfiles";
 import {  uploadFile } from "./uploadS3";
 import 'dotenv/config';
@@ -12,7 +12,9 @@ const PORT  = 3000;
 const app = express();
 app.use(express.json());
 app.use(cors());
-const redisClient = createClient();
+const redisClient = createClient({
+  url: "redis://localhost:6379"
+});
 redisClient.connect();
 const deployHandler = async (req:Request,res:Response)=>{
     const url = req.body.repoUrl;
