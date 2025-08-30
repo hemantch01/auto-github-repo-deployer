@@ -8,7 +8,7 @@ const s3 = new S3({
     endpoint: process.env.ENDPOINT
 });
 
-export const downloadFilesFroms3 = async (specifcPath:string)=>{
+export const downloadFilesFromS3 = async (specifcPath:string)=>{
     // first fetch all the files from s3.
     const allFiles = await s3.listObjectsV2({
         Bucket:"newBucket",
@@ -37,4 +37,5 @@ export const downloadFilesFroms3 = async (specifcPath:string)=>{
         })
     })
     console.log("awating");
+    await Promise.all((allPromises ?? []).filter(x => x !== undefined));
 }
